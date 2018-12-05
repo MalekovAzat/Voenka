@@ -1,0 +1,112 @@
+#include "desk.h"
+
+MyDesk::MyDesk(QWidget *parent,int desk_Number,int cristButCount) : QWidget(parent)
+{
+    this->deskNumber = desk_Number;
+
+    this->path = QCoreApplication::applicationDirPath() + "/resourses/desk" + QString::number(this->deskNumber)+"/";
+
+    QString pathToDeskImg = this->path + "desk.png";
+
+    this->setStyleSheet("background-image:url("+pathToDeskImg+")");
+    getCoordFromFile();//получение координат из файла
+    createAndDrowElem();//создание элементов и их рисование
+}
+
+void MyDesk::getCoordFromFile(){
+
+   QFile coordFile(this->path + "Coord.txt");
+   if(!coordFile.open(QIODevice::ReadOnly|QIODevice::Text)){
+       throw "Cannot find file Coord.txt";
+   }
+
+   int counters[5]={0,0,0,0,0};
+   int curtentEl = -1;
+
+   this->coordList = new QList<QList<QString>* >;
+
+   for (int i = 0 ; i< 5 ;i++){
+       this->coordList->append(new QList<QString>);
+   }
+
+   QString line = coordFile.readLine().replace("\n","");
+
+   while(!coordFile.atEnd()) {
+       if(line=="/c") {
+               curtentEl = 0;
+       } else
+       if(line=="/a") {
+               curtentEl = 1;
+       } else
+       if(line=="/b") {
+               curtentEl = 2;
+       } else
+       if(line=="/t") {
+               curtentEl = 3;
+       } else
+       if(line=="/r") {
+               curtentEl = 4;
+       } else {
+               counters[curtentEl] += 1;
+               this->coordList->value(curtentEl)->append(line);
+       }
+          line = coordFile.readLine().replace("\n","");
+   }
+}
+
+void MyDesk::createAndDrowElem(){
+    crButtons = new CristalButton*[this->coordList->value(0)->count()];
+
+    vAnvils = new VariablePicture*[this->coordList->value(1)->count()];
+    vBlackImg = new VariablePicture*[this->coordList->value(2)->count()];
+    vTumblers = new VariablePicture*[this->coordList->value(3)->count()];
+    vRedImg = new VariablePicture*[this->coordList->value(4)->count()];
+
+
+//  наковальни
+        for(int j = 0; j < this->coordList->value(1)->count() ; j++){
+            vAnvils[j] = new VariablePicture(this, "Anvil", this->deskNumber, 1);
+            vAnvils[j]->setPosotion(this->coordList->value(1)->value(j));
+        }
+//  тумблеры
+        for(int j = 0; j < this->coordList->value(2)->count() ; j++){
+            vBlackImg[j] = new VariablePicture(this, "Black", this->deskNumber, 1);
+            int coords[4];
+            vBlackImg[j]->setPosotion(this->coordList->value(2)->value(j));
+//            for(int k = 0; k < 4; k++) coords[k] = this->coordList->value(2)->value(j).split(',').value(k).toInt();
+//            vBlackImg[j]->setGeometry(coords[0],coords[1],coords[2],coords[3]);
+        }
+//  красные кнопки
+        for(int j = 0; j < this->coordList->value(3)->count() ; j++){
+            vTumblers[j] = new VariablePicture(this, "Tum", this->deskNumber, 1);
+            vTumblers[j] ->setPosotion(this->coordList->value(3)->value(j));
+//            int coords[4];
+//            for(int k = 0; k < 4; k++) coords[k] = this->coordList->value(3)->value(j).split(',').value(k).toInt();
+//            vTumblers[j]->setGeometry(coords[0],coords[1],coords[2],coords[3]);
+        }
+//  чёрные кнопки
+        for(int j = 0; j < this->coordList->value(4)->count() ; j++){
+            vRedImg[j] = new VariablePicture(this, "Red", this->deskNumber, 1);
+            vRedImg[j]->setPosotion(this->coordList->value(4)->value(j));
+//            int coords[4];
+//            for(int k = 0; k < 4; k++) coords[k] = this->coordList->value(4)->value(j).split(',').value(k).toInt();
+//            vRedImg[j]->setGeometry(coords[0],coords[1],coords[2],coords[3]);
+        }
+
+    for(int j = 0; j < this->coordList->value(0)->count(); j++){
+        crButtons[j] = new CristalButton(this , 0);
+        int coords1[4];
+        for(int i = 0; i < 4; i++)
+
+            coords1[i] = this->coordList->value(0)->value(j).split(',').value(i).toInt();
+        crButtons[j]->setGeometry(coords1[0],coords1[1],coords1[2],coords1[3]);
+    }
+}
+
+void MyDesk::paintEvent(QPaintEvent *)
+{
+    QStyleOption opt;
+    opt.init(this);
+    QPainter p(this);
+    style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
+}

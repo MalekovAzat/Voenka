@@ -1,0 +1,13 @@
+INPUT(
+./release\main.o
+./release\mainwindow.o
+./release\controller.o
+./release\cristalbutton.o
+./release\variablepicture.o
+./release\desk.o
+./release\speed.o
+./release\moc_controller.o
+./release\moc_cristalbutton.o
+./release\moc_variablepicture.o
+./release\moc_desk.o
+);

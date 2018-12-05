@@ -1,0 +1,13 @@
+INPUT(
+./debug\main.o
+./debug\mainwindow.o
+./debug\controller.o
+./debug\cristalbutton.o
+./debug\variablepicture.o
+./debug\desk.o
+./debug\speed.o
+./debug\moc_controller.o
+./debug\moc_cristalbutton.o
+./debug\moc_variablepicture.o
+./debug\moc_desk.o
+);
